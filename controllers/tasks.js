@@ -16,19 +16,41 @@ const createTask = async (req, res) => {
 	} catch (error) {
 		res.status(400).send({error});
 	}
-
 };
 
-const getTask = (req, res) => {
-	res.send('get task by id');
+const getTask = async (req, res) => {
+	try {
+		const {id} = req.params;
+		const task = await Task.findById(id);
+		if (!task) return res.status(404).json({message: 'Task not found'});
+
+		res.status(200).json({task});
+
+	} catch (e) {
+		res.status(500).json({message: e});
+	}
 };
 
-const updateTask = (req, res) => {
-	res.send('update task');
+const deleteTask = async (req, res) => {
+	try {
+		const {id} = req.params;
+		const task = await Task.findByIdAndDelete(id);
+		if (!task) return res.status(404).json({message: 'Task not found'});
+		res.status(200).json({task, status: 'success'});
+	} catch (e) {
+		res.status(500).json({message: e});
+	}
 };
 
-const deleteTask = (req, res) => {
-	res.send('delete task');
+const updateTask = async (req, res) => {
+	try {
+		const {id} = req.params;
+		const task = await Task.findByIdAndUpdate(id, req.body, {new: true, runValidators: true});
+		if (!task) return res.status(404).json({message: 'Task not found'});
+		res.status(200).json({task});
+	} catch (e) {
+		res.status(500).json({message: e});
+	}
 };
 
 module.exports = {
